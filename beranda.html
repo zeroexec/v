@@ -6,163 +6,232 @@
     <title>Velion</title>
     <link rel="icon" type="image/png" href="logo.png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
         :root { 
             --sidebar-width: 280px; 
-            --hacker-green: #00FF41; 
-            --dark-green: #003B00; 
-            --error-red: #ff3333;
-            --main-transition: 0.2s ease-out; 
+            --accent-color: #3b82f6; 
+            --bg-dark: #0f172a;
+            --sidebar-bg: rgba(255, 255, 255, 0.03); 
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --main-transition: 0.5s cubic-bezier(0.4, 0, 0.2, 1); 
         }
         body { 
-            margin: 0; font-family: 'JetBrains Mono', monospace; 
-            background: #000; height: 100vh; overflow: hidden; color: var(--hacker-green); 
+            margin: 0; font-family: 'Plus Jakarta Sans', sans-serif; 
+            background: var(--bg-dark); height: 100vh; overflow: hidden; color: var(--text-main); 
         }
-        body::before { 
-            content: " "; display: block; position: absolute; top: 0; left: 0; bottom: 0; right: 0; 
-            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06)); 
-            z-index: 5000; background-size: 100% 2px, 3px 100%; pointer-events: none; 
+        #login-overlay {
+            position: fixed; 
+            top: 0; left: 0; right: 0; bottom: 0;
+            z-index: 100000;
+            background: var(--bg-dark); 
+            display: flex; align-items: center; justify-content: center;
+            opacity: 1; visibility: visible;
+            transition: opacity 0.4s ease, visibility 0.4s;
+            pointer-events: all;
+        }
+        .login-card {
+            background: rgba(255, 255, 255, 0.03); 
+            backdrop-filter: blur(30px);
+            -webkit-backdrop-filter: blur(30px);
+            padding: 45px; border-radius: 32px; 
+            border: 1px solid var(--glass-border);
+            width: 100%; max-width: 380px;
+            text-align: center;
+            display: flex; flex-direction: column; gap: 18px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+        .login-card h2 { 
+            margin: 0 0 10px 0; font-weight: 800; letter-spacing: 4px; font-size: 2rem;
+            background: linear-gradient(180deg, #fff 0%, #64748b 100%);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+        .login-card input, .login-card button {
+            width: 100%;
+            height: 55px;
+            box-sizing: border-box;
+            border-radius: 16px;
+            font-size: 1rem;
+            font-family: inherit;
+        }
+        .login-card input {
+            padding: 0 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--glass-border);
+            color: white;
+            outline: none;
+            transition: 0.3s;
+        }
+        .login-card input:focus { 
+            border-color: var(--accent-color); 
+            background: rgba(255, 255, 255, 0.08);
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+        }
+        .login-card button {
+            border: none;
+            background: var(--accent-color);
+            color: white;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .login-card button:hover { 
+            transform: translateY(-2px); 
+            box-shadow: 0 10px 25px rgba(59, 130, 246, 0.4); 
         }
         #sidebar { 
-            position: fixed; top: 0; left: 0; width: var(--sidebar-width); height: 100%; 
-            background-color: #000; border-right: 2px solid var(--hacker-green); 
-            transform: translateX(-100%); transition: transform var(--main-transition); 
-            z-index: 2000; display: flex; flex-direction: column; 
+            position: fixed; top: 15px; left: 15px; bottom: 15px; 
+            width: var(--sidebar-width); background: var(--sidebar-bg);
+            backdrop-filter: blur(25px); border: 1px solid var(--glass-border); 
+            border-radius: 24px; transform: translateX(calc(-100% - 30px)); 
+            transition: transform var(--main-transition); z-index: 1000; 
+            display: flex; flex-direction: column; overflow: hidden;
         }
-        .sidebar-header { 
-            padding: 30px 20px; border-bottom: 1px solid var(--hacker-green); 
-            display: flex; align-items: center; gap: 15px; cursor: pointer; 
+        #sidebar::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: -150%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(
+                90deg, 
+                transparent, 
+                rgba(255, 255, 255, 0.02) 10%, 
+                rgba(255, 255, 255, 0.12) 50%, 
+                rgba(255, 255, 255, 0.02) 90%, 
+                transparent
+            );
+            transform: skewX(-20deg);
+            pointer-events: none;
+            z-index: 5;
         }
-        .sidebar-header h1 { margin: 0; font-size: 1.2rem; letter-spacing: 2px; }
-        .profile-img { width: 35px; height: 35px; border: 1px solid var(--hacker-green); filter: grayscale(1) sepia(1) hue-rotate(80deg); }
-        #sidebar nav { flex-grow: 1; padding: 20px 10px; overflow-y: auto; scrollbar-width: none; }
-        .nav-label { font-size: 0.65rem; opacity: 0.6; margin: 10px 0 15px 15px; text-transform: uppercase; letter-spacing: 2px; }
-        .dynamic-app-item { 
-            color: var(--hacker-green); padding: 12px 15px; display: flex; 
-            align-items: center; gap: 12px; cursor: pointer; transition: 0.1s; 
-            border: 1px solid transparent; margin-bottom: 5px; font-size: 0.9rem; 
+        .sidebar-open #sidebar::after,
+        .sidebar-locked #sidebar::after {
+            animation: soft-shimmer 1.8s cubic-bezier(0.19, 1, 0.22, 1) forwards;
         }
-        .dynamic-app-item:hover { background: var(--dark-green); border-color: var(--hacker-green); }
-        .dynamic-app-item.active { background: var(--hacker-green); color: #000; font-weight: bold; }
-        .auth-warning { color: var(--error-red); padding: 20px; text-align: center; font-size: 0.8rem; border: 1px dashed var(--error-red); margin: 10px; }
-        #mainContentContainer { width: 100%; height: 100%; position: relative; transition: var(--main-transition); }
-        .app-frame { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; opacity: 0; pointer-events: none; }
-        .app-frame.active { opacity: 1; pointer-events: auto; }
+        @keyframes soft-shimmer {
+            0% { left: -150%; opacity: 0; }
+            20% { opacity: 1; }
+            100% { left: 150%; opacity: 0; }
+        }
+        #edge-trigger { position: fixed; left: 0; top: 0; height: 100vh; width: 15px; z-index: 2000; }
+        #mainContentContainer { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; transition: var(--main-transition); }
         .sidebar-open #sidebar { transform: translateX(0); }
-        .sidebar-locked #mainContentContainer { transform: translateX(var(--sidebar-width)); width: calc(100% - var(--sidebar-width)); }
+        .sidebar-locked #mainContentContainer { transform: translateX(calc(var(--sidebar-width) + 30px)); width: calc(100% - var(--sidebar-width) - 45px); }
         .sidebar-locked #sidebar { transform: translateX(0); }
-        #edge-trigger { position: fixed; left: 0; top: 0; height: 100vh; width: 12px; z-index: 3000; }
-        .logout-btn { padding: 15px; border-top: 1px solid var(--hacker-green); cursor: pointer; font-size: 0.8rem; text-align: center; }
-        .logout-btn:hover { background: var(--error-red); color: #fff; }
+        .dynamic-app-item { color: var(--text-muted); padding: 12px 16px; display: flex; align-items: center; gap: 14px; cursor: pointer; border-radius: 14px; margin: 0 16px 6px; transition: 0.2s; position: relative; z-index: 2; }
+        .dynamic-app-item:hover { background: rgba(255, 255, 255, 0.05); color: #fff; }
+        .dynamic-app-item.active { background: var(--accent-color); color: #fff; }
+        .logout-btn { margin: 15px 16px; padding: 12px; border-radius: 12px; color: #f87171; font-size: 0.85rem; font-weight: 600; text-align: center; cursor: pointer; border: 1px solid rgba(248, 113, 113, 0.1); position: relative; z-index: 2;}
     </style>
 </head>
 <body id="body">
+    <div id="login-overlay">
+        <div class="login-card">
+            <h2>VELION</h2>
+            <input type="text" id="username" placeholder="Username" autocomplete="off" required>
+            <input type="password" id="password" placeholder="Password" required>
+            <button id="login-btn">ACCESS SYSTEM</button>
+            <div id="login-error" style="color: #f87171; font-size: 0.85rem; display: none;">Invalid credentials.</div>
+        </div>
+    </div>
     <div id="edge-trigger"></div>
     <aside id="sidebar">
-        <div class="sidebar-header">
-            <img src="logo.png" class="profile-img">
-            <h1>System.Root</h1>
+        <div class="sidebar-header" style="padding: 40px 25px; cursor: pointer; position: relative; z-index: 2;">
+            <h1 style="margin:0; font-size: 1.2rem; font-weight:800; background: linear-gradient(90deg, #fff, #64748b); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">VELION</h1>
         </div>
-        <nav id="nav-content">
-            <div class="nav-label">[ Available_Modules ]</div>
+        <nav id="nav-content" style="flex-grow: 1; overflow-y: auto; scrollbar-width: none; position: relative; z-index: 2;">
+            <div style="font-size: 0.7rem; color: var(--text-muted); margin: 20px 12px 12px; text-transform: uppercase; font-weight: 600;">Workspace</div>
             <div id="app-grid-dynamic"></div>
         </nav>
-        <div id="sidebar-footer" class="logout-btn" onclick="logout()">[ TERMINATE_SESSION ]</div>
+        <div class="logout-btn" id="logout-trigger">Sign Out</div>
     </aside>
-
     <main id="mainContentContainer">
-        <div id="iframe-container"></div>
+        <div id="welcome-screen" style="text-align: center;">
+            <h2 style="font-size: 8rem; font-weight: 800; opacity: 0.05; letter-spacing: -4px; margin:0;">VELION</h2>
+        </div>
+        <div id="iframe-container" style="position: absolute; inset: 0;"></div>
     </main>
-
     <script type="module">
-        const navContent = document.getElementById('nav-content');
-        const sidebarFooter = document.getElementById('sidebar-footer');
-        const hasAccess = localStorage.getItem("velion_access") === "true";
-
-        if (!hasAccess) {
-            navContent.innerHTML = '<div class="auth-warning">ACCESS_DENIED<br>UNAUTHORIZED_USER</div>';
-            sidebarFooter.style.display = 'none';
-            setTimeout(() => { window.location.href = "index.html"; }, 1500);
-        } else {
-            initSystem();
-        }
-
-        async function initSystem() {
-            const { initializeApp } = await import("https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js");
-            const { getDatabase, ref, onValue } = await import("https://www.gstatic.com/firebasejs/11.6.1/firebase-database.js");
-            
-            const firebaseConfig = {
-                apiKey: "AIzaSyCba6M_spBXvuG91Zn-XJ4bSTX6vNcST0",
-                authDomain: "index-68220.firebaseapp.com",
-                databaseURL: "https://index-68220-default-rtdb.firebaseio.com",
-                projectId: "index-68220",
-                storageBucket: "index-68220.firebasestorage.app",
-                messagingSenderId: "633087068802",
-                appId: "1:633087068802:web:f8aa1f2ef9c00b99d1429b"
-            };
-            
-            const app = initializeApp(firebaseConfig);
-            const db = getDatabase(app);
-            const shortcutRef = ref(db, 'artifacts/user-shortcuts/shortcuts/list');
-
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getDatabase, ref, get, onValue } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-database.js";
+        const firebaseConfig = {
+            apiKey: "AIzaSyCba6M_spBXvuG91Zn-XJ4bSTX6vNcST0",
+            authDomain: "index-68220.firebaseapp.com",
+            databaseURL: "https://index-68220-default-rtdb.firebaseio.com",
+            projectId: "index-68220",
+            storageBucket: "index-68220.firebasestorage.app",
+            messagingSenderId: "633087068802",
+            appId: "1:633087068802:web:f8aa1f2ef9c00b99d1429b"
+        };
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+        const loginBtn = document.getElementById('login-btn');
+        const userInput = document.getElementById('username');
+        const passInput = document.getElementById('password');
+        const loginOverlay = document.getElementById('login-overlay');
+        const handleLogin = async () => {
+            const user = userInput.value;
+            const pass = passInput.value;
+            if(!user || !pass) return;
+            loginBtn.innerText = "AUTHENTICATING...";
+            try {
+                const snapshot = await get(ref(db, `users/${user}`));
+                if (snapshot.exists() && snapshot.val().password === pass) {
+                    localStorage.setItem('velion_session', 'active');
+                    loginOverlay.style.opacity = '0';
+                    setTimeout(() => { 
+                        loginOverlay.style.visibility = 'hidden'; 
+                        initSystem(); 
+                    }, 400);
+                } else {
+                    document.getElementById('login-error').style.display = 'block';
+                    loginBtn.innerText = "ACCESS SYSTEM";
+                    passInput.value = '';
+                    passInput.focus();
+                }
+            } catch (e) {
+                loginBtn.innerText = "ACCESS SYSTEM";
+            }
+        };
+        loginBtn.onclick = handleLogin;
+        [userInput, passInput].forEach(i => i.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') handleLogin();
+        }));
+        function initSystem() {
             const body = document.getElementById('body');
             const iframeBox = document.getElementById('iframe-container');
             const dynamicGrid = document.getElementById('app-grid-dynamic');
-
-            window.logout = () => {
-                localStorage.removeItem("velion_access");
-                window.location.href = "index.html";
-            };
-
-            const switchPage = (url, element) => {
-                document.querySelectorAll('.dynamic-app-item').forEach(el => el.classList.remove('active'));
-                element.classList.add('active');
-                const frames = document.querySelectorAll('.app-frame');
-                frames.forEach(f => f.classList.remove('active'));
-                let target = document.querySelector(`.app-frame[data-url="${url}"]`);
-                if (target.src === 'about:blank') target.src = url;
-                target.classList.add('active');
-            };
-
-            onValue(shortcutRef, (snap) => {
+            onValue(ref(db, 'artifacts/user-shortcuts/shortcuts/list'), (snap) => {
                 const data = snap.val() || {};
-                dynamicGrid.innerHTML = '';
-                iframeBox.innerHTML = '';
-                const sorted = Object.entries(data).sort((a,b) => (a[1].order || 0) - (b[1].order || 0));
-
-                sorted.forEach(([key, item], index) => {
-                    const frame = document.createElement('iframe');
-                    frame.className = 'app-frame';
-                    frame.dataset.url = item.url;
-                    frame.src = 'about:blank';
-                    iframeBox.appendChild(frame);
-
+                dynamicGrid.innerHTML = ''; 
+                Object.entries(data).sort((a,b) => (a[1].order || 0) - (b[1].order || 0)).forEach(([key, item]) => {
                     const btn = document.createElement('div');
                     btn.className = 'dynamic-app-item';
-                    btn.innerHTML = `<i class="fa-solid fa-code"></i><span>${item.name}.sh</span>`;
+                    btn.innerHTML = `<i class="fa-solid fa-layer-group"></i><span>${item.name}</span>`;
                     btn.onclick = () => {
-                        switchPage(item.url, btn);
+                        document.getElementById('welcome-screen').style.display = 'none';
+                        document.querySelectorAll('.dynamic-app-item').forEach(el => el.classList.remove('active'));
+                        btn.classList.add('active');
+                        iframeBox.innerHTML = `<iframe src="${item.url}" style="width:100%;height:100%;border:none;"></iframe>`;
                         body.classList.remove('sidebar-open');
                     };
                     dynamicGrid.appendChild(btn);
-
-                    if (index === 0) {
-                        requestAnimationFrame(() => switchPage(item.url, btn));
-                    }
                 });
             });
-
-            document.getElementById('edge-trigger').onmouseenter = () => {
-                if (!body.classList.contains('sidebar-locked')) body.classList.add('sidebar-open');
-            };
-
+            document.getElementById('edge-trigger').onmouseenter = () => !body.classList.contains('sidebar-locked') && body.classList.add('sidebar-open');
             document.getElementById('mainContentContainer').onclick = () => body.classList.remove('sidebar-open');
-
-            document.querySelector('.sidebar-header').onclick = () => {
-                const isLocked = body.classList.toggle('sidebar-locked');
-                if (isLocked) body.classList.add('sidebar-open');
-            };
+            document.querySelector('.sidebar-header').onclick = () => body.classList.toggle('sidebar-locked');
+            document.getElementById('logout-trigger').onclick = () => { localStorage.removeItem('velion_session'); window.location.reload(); };
+        }
+        if (localStorage.getItem('velion_session') === 'active') {
+            loginOverlay.style.display = 'none';
+            initSystem();
+        } else {
+            setTimeout(() => userInput.focus(), 100);
         }
     </script>
 </body>

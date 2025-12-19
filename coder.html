@@ -3,29 +3,28 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>VΞLION Coder</title>
+<title>VΞLION Studio Pro</title>
 <script src="https://cdn.tailwindcss.com"></script>
-<link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700&family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
 <style>
     :root {
-        --hacker-green: #00ff41;
-        --hacker-green-glow: rgba(0, 255, 65, 0.3);
-        --dark-bg: #050505;
-        --panel-bg: #0a0a0a;
-        --border-color: #003b00;
+        --accent: #6366f1;
+        --bg-gradient: radial-gradient(circle at top left, #1e1b4b, #0f172a, #020617);
+        --scroll-thumb: rgba(99, 102, 241, 0.3);
+        --scroll-hover: rgba(99, 102, 241, 0.6);
     }
 
     body {
         margin: 0;
-        font-family: 'Fira Code', monospace;
-        background: var(--dark-bg);
-        color: var(--hacker-green);
+        font-family: 'Inter', sans-serif;
+        background: var(--bg-gradient);
+        background-attachment: fixed;
+        color: #e2e8f0;
+        height: 100vh;
         display: flex;
         flex-direction: column;
-        height: 100vh;
         overflow: hidden;
-        text-rendering: optimizeSpeed;
-        -webkit-font-smoothing: antialiased;
     }
 
     ::-webkit-scrollbar {
@@ -33,129 +32,138 @@
         height: 8px;
     }
     ::-webkit-scrollbar-track {
-        background: #001100;
+        background: rgba(15, 23, 42, 0.3);
     }
     ::-webkit-scrollbar-thumb {
-        background: var(--border-color);
-        border: 1px solid var(--hacker-green);
-        box-shadow: 0 0 5px var(--hacker-green-glow);
+        background: var(--scroll-thumb);
+        border-radius: 10px;
+        border: 2px solid transparent;
+        background-clip: padding-box;
     }
     ::-webkit-scrollbar-thumb:hover {
-        background: var(--hacker-green);
+        background: var(--scroll-hover);
+        border: 1px solid rgba(255, 255, 255, 0.1);
     }
 
     #toolbar {
-        height: 60px;
-        background-color: var(--panel-bg);
+        height: 70px;
+        background: rgba(15, 23, 42, 0.7);
+        backdrop-filter: blur(15px);
+        -webkit-backdrop-filter: blur(15px);
         display: flex;
         align-items: center;
-        padding: 0 20px;
-        border-bottom: 2px solid var(--border-color);
+        padding: 0 30px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         justify-content: space-between;
-        z-index: 10;
+        z-index: 100;
     }
 
     .brand {
-        font-family: 'Orbitron', sans-serif;
-        font-size: 1.4rem;
-        font-weight: 700;
-        letter-spacing: 3px;
-        color: var(--hacker-green);
-        text-shadow: 0 0 10px var(--hacker-green);
+        font-weight: 600;
+        letter-spacing: 2px;
+        background: linear-gradient(to right, #818cf8, #c084fc);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
     }
 
-    #main-container {
-        flex-grow: 1;
+    #editor-container {
         position: relative;
-        padding: 5px;
-        background: #000;
+        flex-grow: 1;
+        margin: 20px;
+        border-radius: 12px;
         overflow: hidden;
+        background: rgba(15, 23, 42, 0.5);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(10px);
     }
 
-    #custom-editor {
+    #editing, #highlighting {
+        margin: 0;
+        padding: 25px;
+        border: 0;
         width: 100%;
         height: 100%;
-        background: transparent;
-        color: var(--hacker-green);
-        border: none;
-        padding: 15px;
-        font-family: 'Fira Code', monospace;
-        font-size: 15px;
-        line-height: 1.6;
-        outline: none;
-        resize: none;
-        will-change: transform;
-        backface-visibility: hidden;
-        -webkit-backface-visibility: hidden;
-    }
-
-    .scanline {
-        position: fixed;
+        position: absolute;
         top: 0;
         left: 0;
-        width: 100%;
-        height: 2px;
-        background: rgba(0, 255, 65, 0.1);
-        opacity: 0.5;
-        z-index: 100;
-        pointer-events: none;
-        animation: scan 4s linear infinite;
+        tab-size: 4;
+        font-family: 'Fira Code', monospace;
+        font-size: 14px;
+        line-height: 1.6;
+        white-space: pre;
+        overflow: auto;
     }
 
-    @keyframes scan {
-        0% { transform: translateY(0); }
-        100% { transform: translateY(100vh); }
+    #editing {
+        z-index: 1;
+        color: transparent;
+        background: transparent;
+        caret-color: white;
+        resize: none;
+        outline: none;
+    }
+
+    #highlighting {
+        z-index: 0;
+        pointer-events: none;
+    }
+
+    pre[class*="language-"] {
+        margin: 0 !important;
+        background: transparent !important;
     }
 
     #preview-button {
-        background: rgba(0, 255, 65, 0.05);
-        color: var(--hacker-green);
-        border: 1px solid var(--hacker-green);
-        padding: 6px 18px;
-        font-family: 'Orbitron', sans-serif;
-        font-size: 12px;
-        letter-spacing: 1px;
-        cursor: pointer;
-        transition: 0.2s;
+        background: var(--accent);
+        color: white;
+        padding: 10px 24px;
+        border-radius: 10px;
+        font-size: 13px;
+        font-weight: 600;
+        transition: 0.3s;
+        box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
     }
 
     #preview-button:hover {
-        background: var(--hacker-green);
-        color: #000;
-        box-shadow: 0 0 15px var(--hacker-green);
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(99, 102, 241, 0.5);
     }
 
     #toast-notification {
         position: fixed;
-        bottom: 20px;
-        right: 20px;
-        background: #000;
-        border: 1px solid var(--hacker-green);
-        color: var(--hacker-green);
-        padding: 8px 15px;
-        font-size: 11px;
-        opacity: 0;
-        transition: 0.3s;
+        bottom: 30px;
+        left: 50%;
+        transform: translateX(-50%) translateY(100px);
+        background: rgba(30, 41, 59, 0.8);
+        backdrop-filter: blur(12px);
+        padding: 12px 24px;
+        border-radius: 50px;
+        font-size: 12px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        color: #e2e8f0;
+        transition: 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         z-index: 1000;
-        pointer-events: none;
     }
-
-    #toast-notification.show { opacity: 1; }
+    #toast-notification.show { transform: translateX(-50%) translateY(0); }
 </style>
 </head>
 <body>
 
-<div class="scanline"></div>
 <div id="toast-notification"></div>
 
 <div id="toolbar">
-    <div class="brand">VΞLION Coder</div>
+    <div class="brand">VΞLION <span class="font-light opacity-50">STUDIO</span></div>
     <button id="preview-button">RUN_SYSTEM</button>
 </div>
 
-<div id="main-container">
-    <textarea id="custom-editor" spellcheck="false" placeholder="// Terminal ready..."></textarea>
-</div>
+<main id="editor-container">
+    <pre id="highlighting" aria-hidden="true"><code class="language-html" id="highlighting-content"></code></pre>
+    <textarea id="editing" spellcheck="false" placeholder=""></textarea>
+</main>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-javascript.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-css.min.js"></script>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
@@ -173,17 +181,30 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
-const editor = document.getElementById('custom-editor');
+const editor = document.getElementById('editing');
+const resultElement = document.getElementById('highlighting-content');
+const preElement = document.getElementById('highlighting');
+
+function updateHighlight() {
+    let code = editor.value;
+    if(code[code.length-1] == "\n") code += " ";
+    resultElement.textContent = code;
+    Prism.highlightElement(resultElement);
+}
+
+function syncScroll() {
+    preElement.scrollTop = editor.scrollTop;
+    preElement.scrollLeft = editor.scrollLeft;
+}
 
 function showToast(message) {
     const toast = document.getElementById('toast-notification');
-    toast.textContent = `[LOG]: ${message}`;
+    toast.textContent = `⚡ ${message}`;
     toast.classList.add('show');
-    setTimeout(() => toast.classList.remove('show'), 1500);
+    setTimeout(() => toast.classList.remove('show'), 2000);
 }
 
 let previewWindow = null;
-
 const runPreview = () => {
     if (!previewWindow || previewWindow.closed) return;
     const blob = new Blob([editor.value], { type:'text/html' });
@@ -193,38 +214,40 @@ const runPreview = () => {
 const openPreview = () => {
     if (!previewWindow || previewWindow.closed) {
         previewWindow = window.open('about:blank', 'VelionPreview');
-        runPreview();
-        showToast('PREVIEW_LINK_ESTABLISHED');
-    } else {
-        previewWindow.focus();
+        showToast('SYSTEM_ACTIVE');
     }
+    runPreview();
+    previewWindow.focus();
 };
 
 editor.addEventListener('input', () => {
-    clearTimeout(window.updateTimeout);
-    window.updateTimeout = setTimeout(runPreview, 500);
+    updateHighlight();
+    syncScroll();
+    
+    clearTimeout(window.saveTimeout);
+    window.saveTimeout = setTimeout(() => {
+        set(ref(db, 'code/editor'), { content: editor.value })
+          .then(() => showToast('CLOUD_SYNCED'));
+    }, 3000);
 });
+
+editor.addEventListener('scroll', syncScroll);
 
 get(ref(db, 'code/editor')).then(snapshot => {
-    if(snapshot.exists()) editor.value = snapshot.val().content;
+    if(snapshot.exists()) {
+        editor.value = snapshot.val().content;
+        updateHighlight();
+    }
 });
 
-let saveTimeout;
-editor.addEventListener('input', () => {
-    clearTimeout(saveTimeout);
-    saveTimeout = setTimeout(() => {
-        set(ref(db, 'code/editor'), { content: editor.value })
-          .then(() => showToast('SYNC_COMPLETE'));
-    }, 5000);
-});
-
-document.getElementById('preview-button').addEventListener('click', openPreview);
 window.addEventListener('keydown', (e) => {
-    if (e.ctrlKey && e.key === 'q') {
+    if (e.ctrlKey && e.key.toLowerCase() === 'q') {
         e.preventDefault();
         openPreview();
     }
 });
+
+document.getElementById('preview-button').addEventListener('click', openPreview);
 </script>
 </body>
 </html>

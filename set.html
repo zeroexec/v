@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Velion - Set User</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root { --hacker-green: #00FF41; --dark-green: #003B00; }
+        body { margin: 0; background-color: #000; color: var(--hacker-green); font-family: 'JetBrains Mono', monospace; height: 100vh; display: flex; justify-content: center; align-items: center; }
+        .setup-container { width: 320px; padding: 40px; border: 2px solid var(--hacker-green); background: #000; text-align: center; }
+        input { width: 100%; background: transparent; border: 1px solid var(--hacker-green); padding: 10px; color: var(--hacker-green); font-family: 'JetBrains Mono', monospace; box-sizing: border-box; outline: none; margin-bottom: 15px; }
+        button { width: 100%; background: var(--hacker-green); color: #000; border: none; padding: 12px; font-weight: bold; cursor: pointer; text-transform: uppercase; }
+        .info { font-size: 0.7rem; margin-bottom: 20px; opacity: 0.8; }
+    </style>
+</head>
+<body>
+    <div class="setup-container">
+        <h2>MASTER_CONFIG</h2>
+        <p class="info">Input di bawah akan menimpa user sebelumnya (Auto-Upgrade).</p>
+        <input type="text" id="newUsername" placeholder="NEW_USERNAME">
+        <input type="password" id="newPassword" placeholder="NEW_PASSWORD">
+        <button id="update-btn">UPDATE_SYSTEM_USER</button>
+        <p id="status" style="margin-top:15px; font-size: 0.8rem;"></p>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyCba6M_spBXvuG91Zn-XJ4bSTX6vNcST0",
+            authDomain: "index-68220.firebaseapp.com",
+            databaseURL: "https://index-68220-default-rtdb.firebaseio.com",
+            projectId: "index-68220",
+            storageBucket: "index-68220.firebasestorage.app",
+            messagingSenderId: "633087068802",
+            appId: "1:633087068802:web:f8aa1f2ef9c00b99d1429b"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+
+        document.getElementById('update-btn').onclick = async () => {
+            const user = document.getElementById('newUsername').value.trim();
+            const pass = document.getElementById('newPassword').value.trim();
+            const status = document.getElementById('status');
+
+            if(!user || !pass) {
+                status.innerText = "ERROR: Field Empty";
+                return;
+            }
+
+            try {
+                // Kita gunakan path 'artifacts/active_account' agar hanya ada 1 data tunggal
+                await set(ref(db, 'artifacts/active_account'), {
+                    username: user,
+                    password: pass
+                });
+                status.innerText = "SUCCESS: User Upgraded!";
+                status.style.color = "white";
+            } catch (e) {
+                status.innerText = "FAILED: Database Error";
+            }
+        };
+    </script>
+</body>
+</html>

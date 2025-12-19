@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VΞLION Coder</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700&family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+<style>
+    :root {
+        --hacker-green: #00ff41;
+        --hacker-green-glow: rgba(0, 255, 65, 0.3);
+        --dark-bg: #050505;
+        --panel-bg: #0a0a0a;
+        --border-color: #003b00;
+    }
+
+    body {
+        margin: 0;
+        font-family: 'Fira Code', monospace;
+        background: var(--dark-bg);
+        color: var(--hacker-green);
+        display: flex;
+        flex-direction: column;
+        height: 100vh;
+        overflow: hidden;
+        text-rendering: optimizeSpeed;
+        -webkit-font-smoothing: antialiased;
+    }
+
+    ::-webkit-scrollbar {
+        width: 8px;
+        height: 8px;
+    }
+    ::-webkit-scrollbar-track {
+        background: #001100;
+    }
+    ::-webkit-scrollbar-thumb {
+        background: var(--border-color);
+        border: 1px solid var(--hacker-green);
+        box-shadow: 0 0 5px var(--hacker-green-glow);
+    }
+    ::-webkit-scrollbar-thumb:hover {
+        background: var(--hacker-green);
+    }
+
+    #toolbar {
+        height: 60px;
+        background-color: var(--panel-bg);
+        display: flex;
+        align-items: center;
+        padding: 0 20px;
+        border-bottom: 2px solid var(--border-color);
+        justify-content: space-between;
+        z-index: 10;
+    }
+
+    .brand {
+        font-family: 'Orbitron', sans-serif;
+        font-size: 1.4rem;
+        font-weight: 700;
+        letter-spacing: 3px;
+        color: var(--hacker-green);
+        text-shadow: 0 0 10px var(--hacker-green);
+    }
+
+    #main-container {
+        flex-grow: 1;
+        position: relative;
+        padding: 5px;
+        background: #000;
+        overflow: hidden;
+    }
+
+    #custom-editor {
+        width: 100%;
+        height: 100%;
+        background: transparent;
+        color: var(--hacker-green);
+        border: none;
+        padding: 15px;
+        font-family: 'Fira Code', monospace;
+        font-size: 15px;
+        line-height: 1.6;
+        outline: none;
+        resize: none;
+        will-change: transform;
+        backface-visibility: hidden;
+        -webkit-backface-visibility: hidden;
+    }
+
+    .scanline {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 2px;
+        background: rgba(0, 255, 65, 0.1);
+        opacity: 0.5;
+        z-index: 100;
+        pointer-events: none;
+        animation: scan 4s linear infinite;
+    }
+
+    @keyframes scan {
+        0% { transform: translateY(0); }
+        100% { transform: translateY(100vh); }
+    }
+
+    #preview-button {
+        background: rgba(0, 255, 65, 0.05);
+        color: var(--hacker-green);
+        border: 1px solid var(--hacker-green);
+        padding: 6px 18px;
+        font-family: 'Orbitron', sans-serif;
+        font-size: 12px;
+        letter-spacing: 1px;
+        cursor: pointer;
+        transition: 0.2s;
+    }
+
+    #preview-button:hover {
+        background: var(--hacker-green);
+        color: #000;
+        box-shadow: 0 0 15px var(--hacker-green);
+    }
+
+    #toast-notification {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        background: #000;
+        border: 1px solid var(--hacker-green);
+        color: var(--hacker-green);
+        padding: 8px 15px;
+        font-size: 11px;
+        opacity: 0;
+        transition: 0.3s;
+        z-index: 1000;
+        pointer-events: none;
+    }
+
+    #toast-notification.show { opacity: 1; }
+</style>
+</head>
+<body>
+
+<div class="scanline"></div>
+<div id="toast-notification"></div>
+
+<div id="toolbar">
+    <div class="brand">VΞLION Coder</div>
+    <button id="preview-button">RUN_SYSTEM</button>
+</div>
+
+<div id="main-container">
+    <textarea id="custom-editor" spellcheck="false" placeholder="// Terminal ready..."></textarea>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
+import { getDatabase, ref, get, set } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyCba6M_spBXvuG91Zn-XWJ4bSTX6vNcST0",
+  authDomain: "index-68220.firebaseapp.com",
+  databaseURL: "https://index-68220-default-rtdb.firebaseio.com",
+  projectId: "index-68220",
+  storageBucket: "index-68220.firebasestorage.app",
+  messagingSenderId: "633087068802",
+  appId: "1:633087068802:web:f8aa1f2ef9c00b99d1429b"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+const editor = document.getElementById('custom-editor');
+
+function showToast(message) {
+    const toast = document.getElementById('toast-notification');
+    toast.textContent = `[LOG]: ${message}`;
+    toast.classList.add('show');
+    setTimeout(() => toast.classList.remove('show'), 1500);
+}
+
+let previewWindow = null;
+
+const runPreview = () => {
+    if (!previewWindow || previewWindow.closed) return;
+    const blob = new Blob([editor.value], { type:'text/html' });
+    previewWindow.location.replace(URL.createObjectURL(blob));
+};
+
+const openPreview = () => {
+    if (!previewWindow || previewWindow.closed) {
+        previewWindow = window.open('about:blank', 'VelionPreview');
+        runPreview();
+        showToast('PREVIEW_LINK_ESTABLISHED');
+    } else {
+        previewWindow.focus();
+    }
+};
+
+editor.addEventListener('input', () => {
+    clearTimeout(window.updateTimeout);
+    window.updateTimeout = setTimeout(runPreview, 500);
+});
+
+get(ref(db, 'code/editor')).then(snapshot => {
+    if(snapshot.exists()) editor.value = snapshot.val().content;
+});
+
+let saveTimeout;
+editor.addEventListener('input', () => {
+    clearTimeout(saveTimeout);
+    saveTimeout = setTimeout(() => {
+        set(ref(db, 'code/editor'), { content: editor.value })
+          .then(() => showToast('SYNC_COMPLETE'));
+    }, 5000);
+});
+
+document.getElementById('preview-button').addEventListener('click', openPreview);
+window.addEventListener('keydown', (e) => {
+    if (e.ctrlKey && e.key === 'q') {
+        e.preventDefault();
+        openPreview();
+    }
+});
+</script>
+</body>
+</html>

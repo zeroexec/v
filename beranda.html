@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Velion</title>
+    <link rel="icon" type="image/png" href="logo.png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root { 
+            --sidebar-width: 280px; 
+            --hacker-green: #00FF41; 
+            --dark-green: #003B00; 
+            --error-red: #ff3333;
+            --main-transition: 0.2s ease-out; 
+        }
+        body { 
+            margin: 0; font-family: 'JetBrains Mono', monospace; 
+            background: #000; height: 100vh; overflow: hidden; color: var(--hacker-green); 
+        }
+        body::before { 
+            content: " "; display: block; position: absolute; top: 0; left: 0; bottom: 0; right: 0; 
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06)); 
+            z-index: 5000; background-size: 100% 2px, 3px 100%; pointer-events: none; 
+        }
+        #sidebar { 
+            position: fixed; top: 0; left: 0; width: var(--sidebar-width); height: 100%; 
+            background-color: #000; border-right: 2px solid var(--hacker-green); 
+            transform: translateX(-100%); transition: transform var(--main-transition); 
+            z-index: 2000; display: flex; flex-direction: column; 
+        }
+        .sidebar-header { 
+            padding: 30px 20px; border-bottom: 1px solid var(--hacker-green); 
+            display: flex; align-items: center; gap: 15px; cursor: pointer; 
+        }
+        .sidebar-header h1 { margin: 0; font-size: 1.2rem; letter-spacing: 2px; }
+        .profile-img { width: 35px; height: 35px; border: 1px solid var(--hacker-green); filter: grayscale(1) sepia(1) hue-rotate(80deg); }
+        #sidebar nav { flex-grow: 1; padding: 20px 10px; overflow-y: auto; scrollbar-width: none; }
+        .nav-label { font-size: 0.65rem; opacity: 0.6; margin: 10px 0 15px 15px; text-transform: uppercase; letter-spacing: 2px; }
+        .dynamic-app-item { 
+            color: var(--hacker-green); padding: 12px 15px; display: flex; 
+            align-items: center; gap: 12px; cursor: pointer; transition: 0.1s; 
+            border: 1px solid transparent; margin-bottom: 5px; font-size: 0.9rem; 
+        }
+        .dynamic-app-item:hover { background: var(--dark-green); border-color: var(--hacker-green); }
+        .dynamic-app-item.active { background: var(--hacker-green); color: #000; font-weight: bold; }
+        .auth-warning { color: var(--error-red); padding: 20px; text-align: center; font-size: 0.8rem; border: 1px dashed var(--error-red); margin: 10px; }
+        #mainContentContainer { width: 100%; height: 100%; position: relative; transition: var(--main-transition); }
+        .app-frame { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; opacity: 0; pointer-events: none; }
+        .app-frame.active { opacity: 1; pointer-events: auto; }
+        .sidebar-open #sidebar { transform: translateX(0); }
+        .sidebar-locked #mainContentContainer { transform: translateX(var(--sidebar-width)); width: calc(100% - var(--sidebar-width)); }
+        .sidebar-locked #sidebar { transform: translateX(0); }
+        #edge-trigger { position: fixed; left: 0; top: 0; height: 100vh; width: 12px; z-index: 3000; }
+        .logout-btn { padding: 15px; border-top: 1px solid var(--hacker-green); cursor: pointer; font-size: 0.8rem; text-align: center; }
+        .logout-btn:hover { background: var(--error-red); color: #fff; }
+    </style>
+</head>
+<body id="body">
+    <div id="edge-trigger"></div>
+    <aside id="sidebar">
+        <div class="sidebar-header">
+            <img src="logo.png" class="profile-img">
+            <h1>System.Root</h1>
+        </div>
+        <nav id="nav-content">
+            <div class="nav-label">[ Available_Modules ]</div>
+            <div id="app-grid-dynamic"></div>
+        </nav>
+        <div id="sidebar-footer" class="logout-btn" onclick="logout()">[ TERMINATE_SESSION ]</div>
+    </aside>
+
+    <main id="mainContentContainer">
+        <div id="iframe-container"></div>
+    </main>
+
+    <script type="module">
+        const navContent = document.getElementById('nav-content');
+        const sidebarFooter = document.getElementById('sidebar-footer');
+        const hasAccess = localStorage.getItem("velion_access") === "true";
+
+        if (!hasAccess) {
+            navContent.innerHTML = '<div class="auth-warning">ACCESS_DENIED<br>UNAUTHORIZED_USER</div>';
+            sidebarFooter.style.display = 'none';
+            setTimeout(() => { window.location.href = "index.html"; }, 1500);
+        } else {
+            initSystem();
+        }
+
+        async function initSystem() {
+            const { initializeApp } = await import("https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js");
+            const { getDatabase, ref, onValue } = await import("https://www.gstatic.com/firebasejs/11.6.1/firebase-database.js");
+            
+            const firebaseConfig = {
+                apiKey: "AIzaSyCba6M_spBXvuG91Zn-XJ4bSTX6vNcST0",
+                authDomain: "index-68220.firebaseapp.com",
+                databaseURL: "https://index-68220-default-rtdb.firebaseio.com",
+                projectId: "index-68220",
+                storageBucket: "index-68220.firebasestorage.app",
+                messagingSenderId: "633087068802",
+                appId: "1:633087068802:web:f8aa1f2ef9c00b99d1429b"
+            };
+            
+            const app = initializeApp(firebaseConfig);
+            const db = getDatabase(app);
+            const shortcutRef = ref(db, 'artifacts/user-shortcuts/shortcuts/list');
+
+            const body = document.getElementById('body');
+            const iframeBox = document.getElementById('iframe-container');
+            const dynamicGrid = document.getElementById('app-grid-dynamic');
+
+            window.logout = () => {
+                localStorage.removeItem("velion_access");
+                window.location.href = "index.html";
+            };
+
+            const switchPage = (url, element) => {
+                document.querySelectorAll('.dynamic-app-item').forEach(el => el.classList.remove('active'));
+                element.classList.add('active');
+                const frames = document.querySelectorAll('.app-frame');
+                frames.forEach(f => f.classList.remove('active'));
+                let target = document.querySelector(`.app-frame[data-url="${url}"]`);
+                if (target.src === 'about:blank') target.src = url;
+                target.classList.add('active');
+            };
+
+            onValue(shortcutRef, (snap) => {
+                const data = snap.val() || {};
+                dynamicGrid.innerHTML = '';
+                iframeBox.innerHTML = '';
+                const sorted = Object.entries(data).sort((a,b) => (a[1].order || 0) - (b[1].order || 0));
+
+                sorted.forEach(([key, item], index) => {
+                    const frame = document.createElement('iframe');
+                    frame.className = 'app-frame';
+                    frame.dataset.url = item.url;
+                    frame.src = 'about:blank';
+                    iframeBox.appendChild(frame);
+
+                    const btn = document.createElement('div');
+                    btn.className = 'dynamic-app-item';
+                    btn.innerHTML = `<i class="fa-solid fa-code"></i><span>${item.name}.sh</span>`;
+                    btn.onclick = () => {
+                        switchPage(item.url, btn);
+                        body.classList.remove('sidebar-open');
+                    };
+                    dynamicGrid.appendChild(btn);
+
+                    if (index === 0) {
+                        requestAnimationFrame(() => switchPage(item.url, btn));
+                    }
+                });
+            });
+
+            document.getElementById('edge-trigger').onmouseenter = () => {
+                if (!body.classList.contains('sidebar-locked')) body.classList.add('sidebar-open');
+            };
+
+            document.getElementById('mainContentContainer').onclick = () => body.classList.remove('sidebar-open');
+
+            document.querySelector('.sidebar-header').onclick = () => {
+                const isLocked = body.classList.toggle('sidebar-locked');
+                if (isLocked) body.classList.add('sidebar-open');
+            };
+        }
+    </script>
+</body>
+</html>

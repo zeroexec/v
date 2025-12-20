@@ -3,135 +3,113 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>VΞLION Studio Pro</title>
+<title>Codingin 13 Pro Max - Dark Mode</title>
 <script src="https://cdn.tailwindcss.com"></script>
-<link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet" />
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
-    :root {
-        --accent: #6366f1;
-        --bg: #030712;
-    }
-
     body {
         margin: 0;
-        font-family: 'Plus Jakarta Sans', sans-serif;
-        background-color: var(--bg);
+        font-family: 'Inter', sans-serif;
+        background: #1f2937;
         color: #f3f4f6;
-        height: 100vh;
         display: flex;
         flex-direction: column;
-        overflow: hidden;
-        transform: translateZ(0);
+        height: 100vh;
     }
-
+    #main-container {
+        display: flex;
+        flex-grow: 1; 
+        overflow: hidden;
+    }
+    #editor-container {
+        flex: 1; 
+        width: 100%; 
+        height: 100%;
+    }
+    #toast-notification {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        background-color: #374151;
+        color: #f3f4f6;
+        padding: 10px 15px;
+        border-radius: 8px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.4);
+        opacity: 0;
+        transition: opacity 0.3s ease-in-out;
+        pointer-events: none;
+        z-index: 1000;
+        font-size: 14px;
+    }
+    #toast-notification.show {
+        opacity: 1;
+    }
+    #toast-notification.success {
+        background-color: #10b981;
+        color: #ffffff;
+    }
+    #toast-notification.error {
+        background-color: #ef4444;
+        color: #ffffff;
+    }
     #toolbar {
-        height: 60px;
-        background: rgba(17, 24, 39, 0.8);
-        backdrop-filter: blur(10px);
+        height: 40px;
+        background-color: #374151;
         display: flex;
         align-items: center;
-        padding: 0 24px;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-        justify-content: space-between;
+        padding: 0 15px;
+        border-bottom: 1px solid #4b5563;
+        justify-content: flex-end;
+        gap: 8px;
     }
-
-    #editor-wrapper {
-        position: relative;
-        flex-grow: 1;
-        margin: 15px;
-        border-radius: 12px;
-        background: #0f172a;
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        overflow: hidden;
-    }
-
-    #editing, #highlighting {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        margin: 0;
-        padding: 20px;
-        border: 0;
-        font-family: 'JetBrains Mono', monospace;
-        font-size: 15px;
-        line-height: 1.5;
-        tab-size: 4;
-        white-space: pre;
-        word-wrap: normal;
-        overflow: auto;
-        box-sizing: border-box;
-    }
-
-    #editing {
-        z-index: 2;
-        color: transparent;
-        background: transparent;
-        caret-color: white;
-        resize: none;
-        outline: none;
-        overscroll-behavior: contain;
-    }
-
-    #highlighting {
-        z-index: 1;
-        pointer-events: none;
-        scrollbar-width: none; 
-    }
-    #highlighting::-webkit-scrollbar { display: none; }
-
-    pre[class*="language-"] { margin: 0 !important; background: transparent !important; }
-
-    #editing::-webkit-scrollbar { width: 8px; height: 8px; }
-    #editing::-webkit-scrollbar-thumb { 
-        background: rgba(255,255,255,0.1); 
-        border-radius: 4px;
-    }
-
     #preview-button {
-        background: #fff;
-        color: #000;
-        padding: 8px 20px;
-        border-radius: 6px;
-        font-size: 12px;
+        background-color: darkcyan;
+        color: white;
+        border: none;
+        padding: 5px 10px; 
+        border-radius: 4px;
+        cursor: pointer;
         font-weight: 600;
-        transition: 0.2s;
+        font-size: 13px;
+        transition: background-color 0.2s;
+        display: flex; 
+        align-items: center;
+        justify-content: center;
+        width: 34px; 
+        height: 30px;
     }
-    #preview-button:hover { background: var(--accent); color: #fff; }
-
-    .sync-dot {
-        width: 8px;
-        height: 8px;
-        border-radius: 50%;
-        background: #4ade80;
-        display: inline-block;
-        margin-right: 6px;
+    #preview-button:hover {
+        background-color: #059669;
     }
-    .is-syncing .sync-dot { background: #fbbf24; box-shadow: 0 0 8px #fbbf24; }
+    #preview-button svg {
+        width: 20px; 
+        height: 20px;
+        fill: currentColor; 
+    }
 </style>
 </head>
 <body>
 
+<div id="toast-notification"></div>
+
 <div id="toolbar">
-    <div class="flex items-center gap-4">
-        <div class="font-bold tracking-tighter text-xl">VΞLION</div>
-        <div id="status" class="text-[10px] opacity-50 flex items-center">
-            <span class="sync-dot"></span> <span id="status-text">READY</span>
-        </div>
+    <button id="preview-button" title="Preview di Tab Baru (Ctrl+Q) - Realtime">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 15a3 3 0 100-6 3 3 0 000 6z" />
+            <path fill-rule="evenodd" d="M1.323 11.447C2.811 6.976 7.028 3.75 12.001 3.75c4.972 0 9.188 3.226 10.677 7.697.499 1.51.499 3.116 0 4.626-1.489 4.471-5.705 7.697-10.677 7.697-4.973 0-9.189-3.226-10.678-7.697-.499-1.51-.499-3.116 0-4.626zM12 12.75a1.5 1.5 0 100-3 1.5 1.5 0 000 3z" clip-rule="evenodd" />
+        </svg>
+    </button>
+</div>
+
+<div id="main-container">
+    <div id="editor-container">
+        <div id="editor" style="width:100%; height:100%;"></div>
     </div>
-    <button id="preview-button">RUN SYSTEM</button>
 </div>
 
-<div id="editor-wrapper">
-    <pre id="highlighting" aria-hidden="true"><code class="language-html" id="code-content"></code></pre>
-    <textarea id="editing" spellcheck="false" placeholder="Start coding..."></textarea>
-</div>
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-javascript.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-css.min.js"></script>
+<link rel="stylesheet" data-name="vs/editor/editor.main" href="https://cdn.jsdelivr.net/npm/monaco-editor@0.41.0/min/vs/editor/editor.main.css">
+<script src="https://cdn.jsdelivr.net/npm/monaco-editor@0.41.0/min/vs/loader.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/monaco-editor@0.41.0/min/vs/editor/editor.main.nls.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/monaco-editor@0.41.0/min/vs/editor/editor.main.js"></script>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
@@ -144,62 +122,92 @@ const firebaseConfig = {
   projectId: "index-68220",
   storageBucket: "index-68220.firebasestorage.app",
   messagingSenderId: "633087068802",
-  appId: "1:633087068802:web:f8aa1f2ef9c00b99d1429b"
+  appId: "1:633087068802:web:f8aa1f2ef9c00b99d1429b",
+  measurementId: "G-2VQCRFJQCM"
 };
-
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
-const editor = document.getElementById('editing');
-const highlighter = document.getElementById('highlighting');
-const codeContent = document.getElementById('code-content');
-const statusBox = document.getElementById('status');
 
-let ticking = false;
+function showToast(message, type = 'default') {
+    const toast = document.getElementById('toast-notification');
+    toast.className = 'show';
+    toast.textContent = message;
+    if (type === 'success') toast.classList.add('success');
+    else if (type === 'error') toast.classList.add('error');
+    else toast.classList.add('default');
+    setTimeout(() => { toast.className = ''; }, 3000);
+}
 
-function syncScroll() {
-    if (!ticking) {
-        window.requestAnimationFrame(() => {
-            highlighter.scrollTop = editor.scrollTop;
-            highlighter.scrollLeft = editor.scrollLeft;
-            ticking = false;
+let previewWindow = null; 
+const PREVIEW_WINDOW_NAME = 'CodinginLivePreview';
+
+const runPreviewInNewTab = (code) => {
+    if (!previewWindow || previewWindow.closed) return; 
+    const blob = new Blob([code], { type:'text/html' });
+    const url = URL.createObjectURL(blob);
+    previewWindow.location.replace(url);
+};
+
+const previewAction = (editor) => {
+    const code = editor.getValue();
+    const blob = new Blob([code], { type:'text/html' });
+    const url = URL.createObjectURL(blob);
+    
+    if (!previewWindow || previewWindow.closed) {
+        previewWindow = window.open(url, PREVIEW_WINDOW_NAME);
+        if (!previewWindow) {
+            showToast('⚠️ Browser memblokir pop-up preview!', 'error');
+            return;
+        }
+        showToast('Membuka preview di tab baru.', 'default');
+    } else {
+        previewWindow.focus();
+        showToast('Preview sudah terbuka.', 'default');
+    }
+};
+
+window.addEventListener('load', () => {
+    require.config({ paths: { vs: 'https://cdn.jsdelivr.net/npm/monaco-editor@0.41.0/min/vs' }});
+    require(['vs/editor/editor.main'], function() {
+        const editor = monaco.editor.create(document.getElementById('editor'), {
+            value: '',
+            language: 'html',
+            theme: 'vs-dark',
+            automaticLayout: true,
+            minimap: { enabled: false },
+            fontSize: 14,
+            tabSize: 4,
+            wordWrap: 'on'
         });
-        ticking = true;
-    }
-}
 
-function updateHighlight() {
-    let code = editor.value;
-    if(code[code.length-1] == "\n") code += " ";
-    codeContent.textContent = code;
-    Prism.highlightElement(codeContent);
-}
+        let updateTimeout;
+        editor.onDidChangeModelContent(() => {
+            clearTimeout(updateTimeout);
+            updateTimeout = setTimeout(() => {
+                runPreviewInNewTab(editor.getValue());
+            }, 300); 
+        });
 
-editor.addEventListener('scroll', syncScroll, { passive: true });
+        get(ref(db, 'code/editor')).then(snapshot => {
+            if(snapshot.exists()) {
+                editor.setValue(snapshot.val().content);
+            }
+        }).catch(err => console.error(err));
 
-editor.addEventListener('input', () => {
-    updateHighlight();
-    statusBox.classList.add('is-syncing');
-    clearTimeout(window.saveTimeout);
-    window.saveTimeout = setTimeout(() => {
-        set(ref(db, 'code/editor'), { content: editor.value })
-          .then(() => {
-              statusBox.classList.remove('is-syncing');
-              document.getElementById('status-text').textContent = 'CLOUD SYNCED';
-          });
-    }, 2500);
-});
-
-get(ref(db, 'code/editor')).then(snapshot => {
-    if(snapshot.exists()) {
-        editor.value = snapshot.val().content;
-        updateHighlight();
-    }
-});
-
-document.getElementById('preview-button').addEventListener('click', () => {
-    const win = window.open('about:blank', 'VelionPreview');
-    const blob = new Blob([editor.value], { type:'text/html' });
-    win.location.replace(URL.createObjectURL(blob));
+        let lastSavedValue = editor.getValue();
+        setInterval(() => {
+            const currentValue = editor.getValue();
+            if(currentValue !== lastSavedValue) {
+                showToast('Menyimpan...', 'default');
+                set(ref(db, 'code/editor'), { content: currentValue })
+                  .then(() => { showToast('Tersimpan ✅', 'success'); lastSavedValue = currentValue; })
+                  .catch(err => { showToast('Gagal ❌', 'error'); console.error(err); });
+            }
+        }, 5000);
+        
+        document.getElementById('preview-button').addEventListener('click', () => previewAction(editor));
+        editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyQ, () => previewAction(editor), '');
+    });
 });
 </script>
 </body>

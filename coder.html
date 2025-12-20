@@ -6,160 +6,128 @@
 <title>VΞLION Studio Pro</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet" />
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
     :root {
         --accent: #6366f1;
-        --bg-gradient: radial-gradient(circle at top left, #1e1b4b, #0f172a, #020617);
-        --scroll-thumb: rgba(99, 102, 241, 0.3);
-        --scroll-hover: rgba(99, 102, 241, 0.6);
+        --bg: #030712;
     }
 
     body {
         margin: 0;
-        font-family: 'Inter', sans-serif;
-        background: var(--bg-gradient);
-        background-attachment: fixed;
-        color: #e2e8f0;
+        font-family: 'Plus Jakarta Sans', sans-serif;
+        background-color: var(--bg);
+        color: #f3f4f6;
         height: 100vh;
         display: flex;
         flex-direction: column;
         overflow: hidden;
-    }
-
-    ::-webkit-scrollbar {
-        width: 8px;
-        height: 8px;
-    }
-    ::-webkit-scrollbar-track {
-        background: rgba(15, 23, 42, 0.3);
-    }
-    ::-webkit-scrollbar-thumb {
-        background: var(--scroll-thumb);
-        border-radius: 10px;
-        border: 2px solid transparent;
-        background-clip: padding-box;
-    }
-    ::-webkit-scrollbar-thumb:hover {
-        background: var(--scroll-hover);
-        border: 1px solid rgba(255, 255, 255, 0.1);
+        transform: translateZ(0);
     }
 
     #toolbar {
-        height: 70px;
-        background: rgba(15, 23, 42, 0.7);
-        backdrop-filter: blur(15px);
-        -webkit-backdrop-filter: blur(15px);
+        height: 60px;
+        background: rgba(17, 24, 39, 0.8);
+        backdrop-filter: blur(10px);
         display: flex;
         align-items: center;
-        padding: 0 30px;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        padding: 0 24px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
         justify-content: space-between;
-        z-index: 100;
     }
 
-    .brand {
-        font-weight: 600;
-        letter-spacing: 2px;
-        background: linear-gradient(to right, #818cf8, #c084fc);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-    }
-
-    #editor-container {
+    #editor-wrapper {
         position: relative;
         flex-grow: 1;
-        margin: 20px;
+        margin: 15px;
         border-radius: 12px;
-        overflow: hidden;
-        background: rgba(15, 23, 42, 0.5);
+        background: #0f172a;
         border: 1px solid rgba(255, 255, 255, 0.1);
-        backdrop-filter: blur(10px);
+        overflow: hidden;
     }
 
     #editing, #highlighting {
-        margin: 0;
-        padding: 25px;
-        border: 0;
-        width: 100%;
-        height: 100%;
         position: absolute;
         top: 0;
         left: 0;
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        padding: 20px;
+        border: 0;
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 15px;
+        line-height: 1.5;
         tab-size: 4;
-        font-family: 'Fira Code', monospace;
-        font-size: 14px;
-        line-height: 1.6;
         white-space: pre;
+        word-wrap: normal;
         overflow: auto;
+        box-sizing: border-box;
     }
 
     #editing {
-        z-index: 1;
+        z-index: 2;
         color: transparent;
         background: transparent;
         caret-color: white;
         resize: none;
         outline: none;
+        overscroll-behavior: contain;
     }
 
     #highlighting {
-        z-index: 0;
+        z-index: 1;
         pointer-events: none;
+        scrollbar-width: none; 
     }
+    #highlighting::-webkit-scrollbar { display: none; }
 
-    pre[class*="language-"] {
-        margin: 0 !important;
-        background: transparent !important;
+    pre[class*="language-"] { margin: 0 !important; background: transparent !important; }
+
+    #editing::-webkit-scrollbar { width: 8px; height: 8px; }
+    #editing::-webkit-scrollbar-thumb { 
+        background: rgba(255,255,255,0.1); 
+        border-radius: 4px;
     }
 
     #preview-button {
-        background: var(--accent);
-        color: white;
-        padding: 10px 24px;
-        border-radius: 10px;
-        font-size: 13px;
-        font-weight: 600;
-        transition: 0.3s;
-        box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
-    }
-
-    #preview-button:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 8px 25px rgba(99, 102, 241, 0.5);
-    }
-
-    #toast-notification {
-        position: fixed;
-        bottom: 30px;
-        left: 50%;
-        transform: translateX(-50%) translateY(100px);
-        background: rgba(30, 41, 59, 0.8);
-        backdrop-filter: blur(12px);
-        padding: 12px 24px;
-        border-radius: 50px;
+        background: #fff;
+        color: #000;
+        padding: 8px 20px;
+        border-radius: 6px;
         font-size: 12px;
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        color: #e2e8f0;
-        transition: 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        z-index: 1000;
+        font-weight: 600;
+        transition: 0.2s;
     }
-    #toast-notification.show { transform: translateX(-50%) translateY(0); }
+    #preview-button:hover { background: var(--accent); color: #fff; }
+
+    .sync-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: #4ade80;
+        display: inline-block;
+        margin-right: 6px;
+    }
+    .is-syncing .sync-dot { background: #fbbf24; box-shadow: 0 0 8px #fbbf24; }
 </style>
 </head>
 <body>
 
-<div id="toast-notification"></div>
-
 <div id="toolbar">
-    <div class="brand">VΞLION <span class="font-light opacity-50">STUDIO</span></div>
-    <button id="preview-button">RUN_SYSTEM</button>
+    <div class="flex items-center gap-4">
+        <div class="font-bold tracking-tighter text-xl">VΞLION</div>
+        <div id="status" class="text-[10px] opacity-50 flex items-center">
+            <span class="sync-dot"></span> <span id="status-text">READY</span>
+        </div>
+    </div>
+    <button id="preview-button">RUN SYSTEM</button>
 </div>
 
-<main id="editor-container">
-    <pre id="highlighting" aria-hidden="true"><code class="language-html" id="highlighting-content"></code></pre>
-    <textarea id="editing" spellcheck="false" placeholder=""></textarea>
-</main>
+<div id="editor-wrapper">
+    <pre id="highlighting" aria-hidden="true"><code class="language-html" id="code-content"></code></pre>
+    <textarea id="editing" spellcheck="false" placeholder="Start coding..."></textarea>
+</div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-javascript.min.js"></script>
@@ -182,56 +150,44 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 const editor = document.getElementById('editing');
-const resultElement = document.getElementById('highlighting-content');
-const preElement = document.getElementById('highlighting');
+const highlighter = document.getElementById('highlighting');
+const codeContent = document.getElementById('code-content');
+const statusBox = document.getElementById('status');
+
+let ticking = false;
+
+function syncScroll() {
+    if (!ticking) {
+        window.requestAnimationFrame(() => {
+            highlighter.scrollTop = editor.scrollTop;
+            highlighter.scrollLeft = editor.scrollLeft;
+            ticking = false;
+        });
+        ticking = true;
+    }
+}
 
 function updateHighlight() {
     let code = editor.value;
     if(code[code.length-1] == "\n") code += " ";
-    resultElement.textContent = code;
-    Prism.highlightElement(resultElement);
+    codeContent.textContent = code;
+    Prism.highlightElement(codeContent);
 }
 
-function syncScroll() {
-    preElement.scrollTop = editor.scrollTop;
-    preElement.scrollLeft = editor.scrollLeft;
-}
-
-function showToast(message) {
-    const toast = document.getElementById('toast-notification');
-    toast.textContent = `⚡ ${message}`;
-    toast.classList.add('show');
-    setTimeout(() => toast.classList.remove('show'), 2000);
-}
-
-let previewWindow = null;
-const runPreview = () => {
-    if (!previewWindow || previewWindow.closed) return;
-    const blob = new Blob([editor.value], { type:'text/html' });
-    previewWindow.location.replace(URL.createObjectURL(blob));
-};
-
-const openPreview = () => {
-    if (!previewWindow || previewWindow.closed) {
-        previewWindow = window.open('about:blank', 'VelionPreview');
-        showToast('SYSTEM_ACTIVE');
-    }
-    runPreview();
-    previewWindow.focus();
-};
+editor.addEventListener('scroll', syncScroll, { passive: true });
 
 editor.addEventListener('input', () => {
     updateHighlight();
-    syncScroll();
-    
+    statusBox.classList.add('is-syncing');
     clearTimeout(window.saveTimeout);
     window.saveTimeout = setTimeout(() => {
         set(ref(db, 'code/editor'), { content: editor.value })
-          .then(() => showToast('CLOUD_SYNCED'));
-    }, 3000);
+          .then(() => {
+              statusBox.classList.remove('is-syncing');
+              document.getElementById('status-text').textContent = 'CLOUD SYNCED';
+          });
+    }, 2500);
 });
-
-editor.addEventListener('scroll', syncScroll);
 
 get(ref(db, 'code/editor')).then(snapshot => {
     if(snapshot.exists()) {
@@ -240,14 +196,11 @@ get(ref(db, 'code/editor')).then(snapshot => {
     }
 });
 
-window.addEventListener('keydown', (e) => {
-    if (e.ctrlKey && e.key.toLowerCase() === 'q') {
-        e.preventDefault();
-        openPreview();
-    }
+document.getElementById('preview-button').addEventListener('click', () => {
+    const win = window.open('about:blank', 'VelionPreview');
+    const blob = new Blob([editor.value], { type:'text/html' });
+    win.location.replace(URL.createObjectURL(blob));
 });
-
-document.getElementById('preview-button').addEventListener('click', openPreview);
 </script>
 </body>
 </html>

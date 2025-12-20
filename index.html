@@ -23,23 +23,17 @@
             background: var(--bg-dark); height: 100vh; overflow: hidden; color: var(--text-main); 
         }
         #login-overlay {
-            position: fixed; 
-            top: 0; left: 0; right: 0; bottom: 0;
-            z-index: 100000;
-            background: var(--bg-dark); 
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            z-index: 100000; background: var(--bg-dark); 
             display: flex; align-items: center; justify-content: center;
-            opacity: 1; visibility: visible;
             transition: opacity 0.4s ease, visibility 0.4s;
-            pointer-events: all;
         }
         .login-card {
             background: rgba(255, 255, 255, 0.03); 
-            backdrop-filter: blur(30px);
-            -webkit-backdrop-filter: blur(30px);
+            backdrop-filter: blur(30px); -webkit-backdrop-filter: blur(30px);
             padding: 45px; border-radius: 32px; 
             border: 1px solid var(--glass-border);
-            width: 100%; max-width: 380px;
-            text-align: center;
+            width: 100%; max-width: 380px; text-align: center;
             display: flex; flex-direction: column; gap: 18px;
             box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
         }
@@ -49,37 +43,16 @@
             -webkit-background-clip: text; -webkit-text-fill-color: transparent;
         }
         .login-card input, .login-card button {
-            width: 100%;
-            height: 55px;
-            box-sizing: border-box;
-            border-radius: 16px;
-            font-size: 1rem;
-            font-family: inherit;
+            width: 100%; height: 55px; box-sizing: border-box;
+            border-radius: 16px; font-size: 1rem; font-family: inherit;
         }
         .login-card input {
-            padding: 0 20px;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid var(--glass-border);
-            color: white;
-            outline: none;
-            transition: 0.3s;
-        }
-        .login-card input:focus { 
-            border-color: var(--accent-color); 
-            background: rgba(255, 255, 255, 0.08);
-            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+            padding: 0 20px; background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--glass-border); color: white; outline: none;
         }
         .login-card button {
-            border: none;
-            background: var(--accent-color);
-            color: white;
-            font-weight: 700;
-            cursor: pointer;
-            transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        .login-card button:hover { 
-            transform: translateY(-2px); 
-            box-shadow: 0 10px 25px rgba(59, 130, 246, 0.4); 
+            border: none; background: var(--accent-color); color: white;
+            font-weight: 700; cursor: pointer; transition: 0.3s;
         }
         #sidebar { 
             position: fixed; top: 15px; left: 15px; bottom: 15px; 
@@ -89,43 +62,17 @@
             transition: transform var(--main-transition); z-index: 1000; 
             display: flex; flex-direction: column; overflow: hidden;
         }
-        #sidebar::after {
-            content: "";
-            position: absolute;
-            top: 0;
-            left: -150%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(
-                90deg, 
-                transparent, 
-                rgba(255, 255, 255, 0.02) 10%, 
-                rgba(255, 255, 255, 0.12) 50%, 
-                rgba(255, 255, 255, 0.02) 90%, 
-                transparent
-            );
-            transform: skewX(-20deg);
-            pointer-events: none;
-            z-index: 5;
-        }
-        .sidebar-open #sidebar::after,
-        .sidebar-locked #sidebar::after {
-            animation: soft-shimmer 1.8s cubic-bezier(0.19, 1, 0.22, 1) forwards;
-        }
-        @keyframes soft-shimmer {
-            0% { left: -150%; opacity: 0; }
-            20% { opacity: 1; }
-            100% { left: 150%; opacity: 0; }
-        }
         #edge-trigger { position: fixed; left: 0; top: 0; height: 100vh; width: 15px; z-index: 2000; }
-        #mainContentContainer { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; transition: var(--main-transition); }
+        #mainContentContainer { width: 100%; height: 100%; position: relative; transition: var(--main-transition); }
         .sidebar-open #sidebar { transform: translateX(0); }
         .sidebar-locked #mainContentContainer { transform: translateX(calc(var(--sidebar-width) + 30px)); width: calc(100% - var(--sidebar-width) - 45px); }
         .sidebar-locked #sidebar { transform: translateX(0); }
-        .dynamic-app-item { color: var(--text-muted); padding: 12px 16px; display: flex; align-items: center; gap: 14px; cursor: pointer; border-radius: 14px; margin: 0 16px 6px; transition: 0.2s; position: relative; z-index: 2; }
+        .dynamic-app-item { color: var(--text-muted); padding: 12px 16px; display: flex; align-items: center; gap: 14px; cursor: pointer; border-radius: 14px; margin: 0 16px 6px; transition: 0.2s; }
         .dynamic-app-item:hover { background: rgba(255, 255, 255, 0.05); color: #fff; }
         .dynamic-app-item.active { background: var(--accent-color); color: #fff; }
-        .logout-btn { margin: 15px 16px; padding: 12px; border-radius: 12px; color: #f87171; font-size: 0.85rem; font-weight: 600; text-align: center; cursor: pointer; border: 1px solid rgba(248, 113, 113, 0.1); position: relative; z-index: 2;}
+        #iframe-container { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; }
+        .app-iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; display: none; }
+        .logout-btn { margin: 15px 16px; padding: 12px; border-radius: 12px; color: #f87171; font-size: 0.85rem; font-weight: 600; text-align: center; cursor: pointer; border: 1px solid rgba(248, 113, 113, 0.1); }
     </style>
 </head>
 <body id="body">
@@ -140,24 +87,25 @@
     </div>
     <div id="edge-trigger"></div>
     <aside id="sidebar">
-        <div class="sidebar-header" style="padding: 40px 25px; cursor: pointer; position: relative; z-index: 2;">
+        <div class="sidebar-header" style="padding: 40px 25px; cursor: pointer;">
             <h1 style="margin:0; font-size: 1.2rem; font-weight:800; background: linear-gradient(90deg, #fff, #64748b); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">VELION</h1>
         </div>
-        <nav id="nav-content" style="flex-grow: 1; overflow-y: auto; scrollbar-width: none; position: relative; z-index: 2;">
+        <nav id="nav-content" style="flex-grow: 1; overflow-y: auto; scrollbar-width: none;">
             <div style="font-size: 0.7rem; color: var(--text-muted); margin: 20px 12px 12px; text-transform: uppercase; font-weight: 600;">Workspace</div>
             <div id="app-grid-dynamic"></div>
         </nav>
         <div class="logout-btn" id="logout-trigger">Sign Out</div>
     </aside>
     <main id="mainContentContainer">
-        <div id="welcome-screen" style="text-align: center;">
-            <h2 style="font-size: 8rem; font-weight: 800; opacity: 0.05; letter-spacing: -4px; margin:0;">VELION</h2>
+        <div id="welcome-screen" style="position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; z-index: 1;">
+            <h2 style="font-size: 8rem; font-weight: 800; opacity: 0.05; letter-spacing: -4px; margin:0; pointer-events: none;">VELION</h2>
         </div>
-        <div id="iframe-container" style="position: absolute; inset: 0;"></div>
+        <div id="iframe-container"></div>
     </main>
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getDatabase, ref, get, onValue } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-database.js";
+
         const firebaseConfig = {
             apiKey: "AIzaSyCba6M_spBXvuG91Zn-XJ4bSTX6vNcST0",
             authDomain: "index-68220.firebaseapp.com",
@@ -167,12 +115,15 @@
             messagingSenderId: "633087068802",
             appId: "1:633087068802:web:f8aa1f2ef9c00b99d1429b"
         };
+
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
+
         const loginBtn = document.getElementById('login-btn');
         const userInput = document.getElementById('username');
         const passInput = document.getElementById('password');
         const loginOverlay = document.getElementById('login-overlay');
+
         const handleLogin = async () => {
             const user = userInput.value;
             const pass = passInput.value;
@@ -191,42 +142,65 @@
                     document.getElementById('login-error').style.display = 'block';
                     loginBtn.innerText = "ACCESS SYSTEM";
                     passInput.value = '';
-                    passInput.focus();
                 }
             } catch (e) {
                 loginBtn.innerText = "ACCESS SYSTEM";
             }
         };
+
         loginBtn.onclick = handleLogin;
-        [userInput, passInput].forEach(i => i.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter') handleLogin();
-        }));
+        [userInput, passInput].forEach(i => i.addEventListener('keydown', (e) => { if (e.key === 'Enter') handleLogin(); }));
+
         function initSystem() {
             const body = document.getElementById('body');
             const iframeBox = document.getElementById('iframe-container');
             const dynamicGrid = document.getElementById('app-grid-dynamic');
+            const welcome = document.getElementById('welcome-screen');
+
             onValue(ref(db, 'artifacts/user-shortcuts/shortcuts/list'), (snap) => {
                 const data = snap.val() || {};
                 dynamicGrid.innerHTML = ''; 
+
                 Object.entries(data).sort((a,b) => (a[1].order || 0) - (b[1].order || 0)).forEach(([key, item]) => {
                     const btn = document.createElement('div');
                     btn.className = 'dynamic-app-item';
                     btn.innerHTML = `<i class="fa-solid fa-layer-group"></i><span>${item.name}</span>`;
+                    
                     btn.onclick = () => {
-                        document.getElementById('welcome-screen').style.display = 'none';
+                        welcome.style.display = 'none';
                         document.querySelectorAll('.dynamic-app-item').forEach(el => el.classList.remove('active'));
                         btn.classList.add('active');
-                        iframeBox.innerHTML = `<iframe src="${item.url}" style="width:100%;height:100%;border:none;"></iframe>`;
-                        body.classList.remove('sidebar-open');
+
+                        document.querySelectorAll('.app-iframe').forEach(ifrm => {
+                            ifrm.style.display = 'none';
+                        });
+
+                        let targetIframe = document.getElementById(`iframe-${key}`);
+                        if (targetIframe) {
+                            targetIframe.style.display = 'block';
+                        } else {
+                            targetIframe = document.createElement('iframe');
+                            targetIframe.id = `iframe-${key}`;
+                            targetIframe.className = 'app-iframe';
+                            targetIframe.src = item.url;
+                            targetIframe.style.display = 'block';
+                            iframeBox.appendChild(targetIframe);
+                        }
+
+                        if(!body.classList.contains('sidebar-locked')) {
+                            body.classList.remove('sidebar-open');
+                        }
                     };
                     dynamicGrid.appendChild(btn);
                 });
             });
+
             document.getElementById('edge-trigger').onmouseenter = () => !body.classList.contains('sidebar-locked') && body.classList.add('sidebar-open');
             document.getElementById('mainContentContainer').onclick = () => body.classList.remove('sidebar-open');
             document.querySelector('.sidebar-header').onclick = () => body.classList.toggle('sidebar-locked');
             document.getElementById('logout-trigger').onclick = () => { localStorage.removeItem('velion_session'); window.location.reload(); };
         }
+
         if (localStorage.getItem('velion_session') === 'active') {
             loginOverlay.style.display = 'none';
             initSystem();

@@ -12,102 +12,127 @@
             --sidebar-width: 280px; 
             --accent-color: #3b82f6; 
             --bg-dark: #0f172a;
-            --sidebar-bg: rgba(255, 255, 255, 0.03); 
-            --glass-border: rgba(255, 255, 255, 0.08);
+            --sidebar-bg: rgba(15, 23, 42, 0.9); 
+            --glass-border: rgba(255, 255, 255, 0.1);
             --text-main: #f8fafc;
             --text-muted: #94a3b8;
             --main-transition: 0.5s cubic-bezier(0.4, 0, 0.2, 1); 
         }
+
         body { 
             margin: 0; font-family: 'Plus Jakarta Sans', sans-serif; 
             background: var(--bg-dark); height: 100vh; overflow: hidden; color: var(--text-main); 
         }
+
+        .velion-glow {
+            font-weight: 800; letter-spacing: 6px; color: #fff;
+            text-shadow: 0 0 15px rgba(59, 130, 246, 0.8), 0 0 30px rgba(59, 130, 246, 0.4);
+            background: linear-gradient(180deg, #ffffff 40%, #60a5fa 100%);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+
         #login-overlay {
             position: fixed; top: 0; left: 0; right: 0; bottom: 0;
             z-index: 100000; background: var(--bg-dark); 
             display: flex; align-items: center; justify-content: center;
             transition: opacity 0.4s ease, visibility 0.4s;
         }
+
         .login-card {
-            background: rgba(255, 255, 255, 0.03); 
-            backdrop-filter: blur(30px); -webkit-backdrop-filter: blur(30px);
-            padding: 45px; border-radius: 32px; 
-            border: 1px solid var(--glass-border);
+            background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(30px);
+            padding: 45px; border-radius: 32px; border: 1px solid var(--glass-border);
             width: 100%; max-width: 380px; text-align: center;
             display: flex; flex-direction: column; gap: 18px;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
         }
-        .login-card h2 { 
-            margin: 0 0 10px 0; font-weight: 800; letter-spacing: 4px; font-size: 2rem;
-            background: linear-gradient(180deg, #fff 0%, #64748b 100%);
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-        }
-        .login-card input, .login-card button {
-            width: 100%; height: 55px; box-sizing: border-box;
-            border-radius: 16px; font-size: 1rem; font-family: inherit;
-        }
+
         .login-card input {
-            padding: 0 20px; background: rgba(255, 255, 255, 0.05);
-            border: 1px solid var(--glass-border); color: white; outline: none;
+            padding: 14px; border-radius: 12px; border: 1px solid var(--glass-border);
+            background: rgba(255,255,255,0.05); color: white; outline: none;
         }
+
         .login-card button {
-            border: none; background: var(--accent-color); color: white;
-            font-weight: 700; cursor: pointer; transition: 0.3s;
+            padding: 14px; border-radius: 12px; border: none;
+            background: var(--accent-color); color: white; font-weight: 800; cursor: pointer;
         }
+
         #sidebar { 
             position: fixed; top: 15px; left: 15px; bottom: 15px; 
             width: var(--sidebar-width); background: var(--sidebar-bg);
             backdrop-filter: blur(25px); border: 1px solid var(--glass-border); 
             border-radius: 24px; transform: translateX(calc(-100% - 30px)); 
-            transition: transform var(--main-transition); z-index: 1000; 
+            transition: transform var(--main-transition); z-index: 1001; 
             display: flex; flex-direction: column; overflow: hidden;
         }
-        #edge-trigger { position: fixed; left: 0; top: 0; height: 100vh; width: 15px; z-index: 2000; }
+
+        #nav-content { flex-grow: 1; overflow-y: auto; padding-bottom: 20px; }
+        #nav-content::-webkit-scrollbar { width: 5px; }
+        #nav-content::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.08); border-radius: 10px; }
+
+        #edge-trigger { position: fixed; left: 0; top: 0; height: 100vh; width: 15px; z-index: 1000; }
+        #content-overlay { position: fixed; inset: 0; z-index: 999; display: none; background: rgba(0,0,0,0); }
+        .sidebar-open:not(.sidebar-locked) #content-overlay { display: block; }
+
         #mainContentContainer { width: 100%; height: 100%; position: relative; transition: var(--main-transition); }
         .sidebar-open #sidebar { transform: translateX(0); }
         .sidebar-locked #mainContentContainer { transform: translateX(calc(var(--sidebar-width) + 30px)); width: calc(100% - var(--sidebar-width) - 45px); }
         .sidebar-locked #sidebar { transform: translateX(0); }
-        .dynamic-app-item { color: var(--text-muted); padding: 12px 16px; display: flex; align-items: center; gap: 14px; cursor: pointer; border-radius: 14px; margin: 0 16px 6px; transition: 0.2s; }
+
+        .dynamic-app-item { 
+            color: var(--text-muted); padding: 12px 16px; 
+            display: flex; align-items: center; gap: 14px; 
+            cursor: pointer; border-radius: 14px; margin: 0 16px 6px; transition: 0.2s; 
+        }
+
         .dynamic-app-item:hover { background: rgba(255, 255, 255, 0.05); color: #fff; }
-        .dynamic-app-item.active { background: var(--accent-color); color: #fff; }
-        #iframe-container { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; }
-        .app-iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; display: none; }
+        .dynamic-app-item.active { background: var(--accent-color); color: #fff; box-shadow: 0 8px 20px -5px rgba(59, 130, 246, 0.4); }
+        
+        .dynamic-app-item i, .dynamic-app-item span:first-child {
+            width: 24px; text-align: center; font-size: 1.1rem;
+            display: flex; justify-content: center; align-items: center;
+        }
+
+        .app-iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: none; display: none; }
         .logout-btn { margin: 15px 16px; padding: 12px; border-radius: 12px; color: #f87171; font-size: 0.85rem; font-weight: 600; text-align: center; cursor: pointer; border: 1px solid rgba(248, 113, 113, 0.1); }
     </style>
 </head>
 <body id="body">
+
     <div id="login-overlay">
         <div class="login-card">
-            <h2>VELION</h2>
-            <input type="text" id="username" placeholder="Username" autocomplete="off" required>
-            <input type="password" id="password" placeholder="Password" required>
+            <h2 class="velion-glow" style="font-size: 2.5rem; margin: 0 0 10px 0;">VELION</h2>
+            <input type="text" id="username" placeholder="Username" autocomplete="off">
+            <input type="password" id="password" placeholder="Password">
             <button id="login-btn">ACCESS SYSTEM</button>
-            <div id="login-error" style="color: #f87171; font-size: 0.85rem; display: none;">Invalid credentials.</div>
         </div>
     </div>
+
+    <div id="content-overlay"></div>
     <div id="edge-trigger"></div>
+
     <aside id="sidebar">
         <div class="sidebar-header" style="padding: 40px 25px; cursor: pointer;">
-            <h1 style="margin:0; font-size: 1.2rem; font-weight:800; background: linear-gradient(90deg, #fff, #64748b); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">VELION</h1>
+            <h1 class="velion-glow" style="font-size: 1.4rem; letter-spacing: 3px; margin: 0;">VELION</h1>
         </div>
-        <nav id="nav-content" style="flex-grow: 1; overflow-y: auto; scrollbar-width: none;">
-            <div style="font-size: 0.7rem; color: var(--text-muted); margin: 20px 12px 12px; text-transform: uppercase; font-weight: 600;">Workspace</div>
+        <nav id="nav-content">
+            <div style="font-size: 0.7rem; color: var(--text-muted); margin: 20px 28px 12px; text-transform: uppercase; font-weight: 600; letter-spacing: 1px;">Workspace</div>
             <div id="app-grid-dynamic"></div>
         </nav>
         <div class="logout-btn" id="logout-trigger">Sign Out</div>
     </aside>
+
     <main id="mainContentContainer">
         <div id="welcome-screen" style="position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; z-index: 1;">
-            <h2 style="font-size: 8rem; font-weight: 800; opacity: 0.05; letter-spacing: -4px; margin:0; pointer-events: none;">VELION</h2>
+            <h2 class="velion-glow" style="font-size: 9rem; letter-spacing: -2px;">VELION</h2>
         </div>
-        <div id="iframe-container"></div>
+        <div id="iframe-container" style="width:100%; height:100%;"></div>
     </main>
+
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getDatabase, ref, get, onValue } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-database.js";
 
         const firebaseConfig = {
-            apiKey: "AIzaSyCba6M_spBXvuG91Zn-XJ4bSTX6vNcST0",
+            apiKey: "AIzaSyCba6M_spBXvuG91Zn-XWJ4bSTX6vNcST0",
             authDomain: "index-68220.firebaseapp.com",
             databaseURL: "https://index-68220-default-rtdb.firebaseio.com",
             projectId: "index-68220",
@@ -118,41 +143,26 @@
 
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
+        const body = document.getElementById('body');
 
-        const loginBtn = document.getElementById('login-btn');
-        const userInput = document.getElementById('username');
-        const passInput = document.getElementById('password');
-        const loginOverlay = document.getElementById('login-overlay');
-
-        const handleLogin = async () => {
-            const user = userInput.value;
-            const pass = passInput.value;
+        document.getElementById('login-btn').onclick = async () => {
+            const user = document.getElementById('username').value;
+            const pass = document.getElementById('password').value;
             if(!user || !pass) return;
-            loginBtn.innerText = "AUTHENTICATING...";
-            try {
-                const snapshot = await get(ref(db, `users/${user}`));
-                if (snapshot.exists() && snapshot.val().password === pass) {
-                    localStorage.setItem('velion_session', 'active');
-                    loginOverlay.style.opacity = '0';
-                    setTimeout(() => { 
-                        loginOverlay.style.visibility = 'hidden'; 
-                        initSystem(); 
-                    }, 400);
-                } else {
-                    document.getElementById('login-error').style.display = 'block';
-                    loginBtn.innerText = "ACCESS SYSTEM";
-                    passInput.value = '';
-                }
-            } catch (e) {
-                loginBtn.innerText = "ACCESS SYSTEM";
+            const snapshot = await get(ref(db, `users/${user}`));
+            if (snapshot.exists() && snapshot.val().password === pass) {
+                localStorage.setItem('velion_session', 'active');
+                document.getElementById('login-overlay').style.opacity = '0';
+                setTimeout(() => { 
+                    document.getElementById('login-overlay').style.visibility = 'hidden'; 
+                    initSystem(); 
+                }, 400);
+            } else {
+                alert("Login Gagal!");
             }
         };
 
-        loginBtn.onclick = handleLogin;
-        [userInput, passInput].forEach(i => i.addEventListener('keydown', (e) => { if (e.key === 'Enter') handleLogin(); }));
-
         function initSystem() {
-            const body = document.getElementById('body');
             const iframeBox = document.getElementById('iframe-container');
             const dynamicGrid = document.getElementById('app-grid-dynamic');
             const welcome = document.getElementById('welcome-screen');
@@ -160,52 +170,60 @@
             onValue(ref(db, 'artifacts/user-shortcuts/shortcuts/list'), (snap) => {
                 const data = snap.val() || {};
                 dynamicGrid.innerHTML = ''; 
-
+                
                 Object.entries(data).sort((a,b) => (a[1].order || 0) - (b[1].order || 0)).forEach(([key, item]) => {
                     const btn = document.createElement('div');
                     btn.className = 'dynamic-app-item';
-                    btn.innerHTML = `<i class="fa-solid fa-layer-group"></i><span>${item.name}</span>`;
+                    
+                    let iconHTML = '';
+                    if (item.icon && item.icon.startsWith('fa-')) {
+                        iconHTML = `<i class="fa-solid ${item.icon}"></i>`;
+                    } else {
+                        iconHTML = `<span>${item.icon || '🔗'}</span>`;
+                    }
+                    
+                    btn.innerHTML = `${iconHTML}<span>${item.name}</span>`;
                     
                     btn.onclick = () => {
                         welcome.style.display = 'none';
-                        document.querySelectorAll('.dynamic-app-item').forEach(el => el.classList.remove('active'));
+                        document.querySelectorAll('.app-iframe').forEach(ifrm => ifrm.style.display = 'none');
+                        document.querySelectorAll('.dynamic-app-item').forEach(b => b.classList.remove('active'));
                         btn.classList.add('active');
-
-                        document.querySelectorAll('.app-iframe').forEach(ifrm => {
-                            ifrm.style.display = 'none';
-                        });
-
-                        let targetIframe = document.getElementById(`iframe-${key}`);
-                        if (targetIframe) {
-                            targetIframe.style.display = 'block';
-                        } else {
-                            targetIframe = document.createElement('iframe');
-                            targetIframe.id = `iframe-${key}`;
-                            targetIframe.className = 'app-iframe';
-                            targetIframe.src = item.url;
-                            targetIframe.style.display = 'block';
-                            iframeBox.appendChild(targetIframe);
+                        
+                        let target = document.getElementById(`iframe-${key}`);
+                        if (!target) {
+                            target = document.createElement('iframe');
+                            target.id = `iframe-${key}`;
+                            target.className = 'app-iframe';
+                            target.src = item.url;
+                            iframeBox.appendChild(target);
                         }
-
-                        if(!body.classList.contains('sidebar-locked')) {
-                            body.classList.remove('sidebar-open');
-                        }
+                        target.style.display = 'block';
+                        body.classList.remove('sidebar-open');
                     };
                     dynamicGrid.appendChild(btn);
                 });
             });
 
-            document.getElementById('edge-trigger').onmouseenter = () => !body.classList.contains('sidebar-locked') && body.classList.add('sidebar-open');
-            document.getElementById('mainContentContainer').onclick = () => body.classList.remove('sidebar-open');
+            document.getElementById('edge-trigger').onmouseenter = () => {
+                if(!body.classList.contains('sidebar-locked')) body.classList.add('sidebar-open');
+            };
+
+            document.getElementById('content-overlay').onclick = () => {
+                body.classList.remove('sidebar-open');
+            };
+
             document.querySelector('.sidebar-header').onclick = () => body.classList.toggle('sidebar-locked');
-            document.getElementById('logout-trigger').onclick = () => { localStorage.removeItem('velion_session'); window.location.reload(); };
+            
+            document.getElementById('logout-trigger').onclick = () => { 
+                localStorage.removeItem('velion_session'); 
+                window.location.reload(); 
+            };
         }
 
         if (localStorage.getItem('velion_session') === 'active') {
-            loginOverlay.style.display = 'none';
+            document.getElementById('login-overlay').style.display = 'none';
             initSystem();
-        } else {
-            setTimeout(() => userInput.focus(), 100);
         }
     </script>
 </body>
